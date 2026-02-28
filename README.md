@@ -1,6 +1,8 @@
 # AI-Enabled Adaptive Authentication Shield
 
-Spring Boot demo implementing:
+<img width="2752" height="1536" alt="AAI Shield" src="https://github.com/user-attachments/assets/ae2db788-1501-431b-91be-72047c3cf5d9" />
+
+Spring Boot implementing:
 - AI-driven risk scoring
 - Adaptive authentication
 - JWT-based Zero Trust enforcement
