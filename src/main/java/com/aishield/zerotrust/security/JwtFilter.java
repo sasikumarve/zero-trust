@@ -35,7 +35,7 @@ public class JwtFilter implements Filter {
 
     String uri = httpRequest.getRequestURI();
 
-    if (uri.equals("/login")) {
+    if (uri.equals("/login") || uri.equals("/mfa") || uri.equals("/metrics")) {
       chain.doFilter(request, response);
       return;
     }

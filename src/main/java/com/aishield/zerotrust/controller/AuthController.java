@@ -24,13 +24,27 @@ public class AuthController {
   private final JwtUtil jwtUtil;
 
   @PostMapping("/login")
-  public String login(@RequestParam("username") String username) {
+  public String login(@RequestParam("username") String username,
+      @RequestParam(value = "risk", required = false) String forcedRisk) {
 
-    // Calculate Risk
-    double score = riskEngine.calculateRiskScore(username);
+    double score;
+    String riskLevel;
 
-    // PDP Decision
-    String riskLevel = riskEngine.classifyRisk(score);
+    if (forcedRisk != null) {
+      riskLevel = forcedRisk.toUpperCase();
+      score = switch (riskLevel) {
+        case "LOW" -> 0.2;
+        case "MEDIUM" -> 0.5;
+        case "HIGH" -> 0.9;
+        default -> 0.5;
+      };
+    } else {
+      // Calculate Risk
+      score = riskEngine.calculateRiskScore(username);
+
+      // PDP Decision
+      riskLevel = riskEngine.classifyRisk(score);
+    }
 
     log.info("Risk Level: {}", riskLevel);
 
@@ -39,12 +53,27 @@ public class AuthController {
     }
 
     if ("MEDIUM".equals(riskLevel)) {
-      return "MFA REQUIRED - Medium Risk";
+      return "MFA REQUIRED - Call /mfa endpoint with username";
     }
 
     // JWT generation on low risk
     String token = jwtUtil.generateToken(username, riskLevel);
     return "JWT: " + token;
+  }
+
+  @PostMapping("/mfa")
+  public String verifyMfa(@RequestParam("username") String username,
+      @RequestParam("otp") String otp) {
+
+    // Simulated OTP validation
+    if (!"123456".equals(otp)) {
+      return "MFA FAILED - Invalid OTP";
+    }
+
+    // After successful MFA → issue LOW-risk JWT
+    String token = jwtUtil.generateToken(username, "LOW");
+
+    return "MFA SUCCESS - JWT: " + token;
   }
 
 }
