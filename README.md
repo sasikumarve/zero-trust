@@ -16,5 +16,7 @@ Spring Boot implementing:
 
 ## Endpoints
 - POST /login
+- POST /mfa
+- GET /metrics
 - GET /service/basic
 - GET /service/sensitive
